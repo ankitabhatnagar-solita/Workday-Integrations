@@ -1,26 +1,185 @@
 {
     "definition": {
         "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
-        "actions": {},
-        "triggers": {
-              "When_messages_are_available_in_a_queue": {
-                "type": "ServiceProvider",
+        "actions": {
+            "Array": {
                 "inputs": {
-                    "parameters": {
-                        "queueName": "testsbtrigger",
-                        "isSessionsEnabled": false
+                    "variables": [
+                        {
+                            "name": "Array var",
+                            "type": "array"
+                        }
+                    ]
+                },
+                "runAfter": {},
+                "type": "InitializeVariable"
+            },
+            "Calling_Workday_API": {
+                "inputs": {
+                    "authentication": {
+                        "password": "Ex1d0uryVinAnGH4lmc4s3QlSCM8#3.94e",
+                        "type": "Basic",
+                        "username": "isu.operating.app"
                     },
-                    "serviceProviderConfiguration": {
-                        "connectionName": "serviceBus-2",
-                        "operationId": "receiveQueueMessages",
-                        "serviceProviderId": "/serviceProviders/serviceBus"
+                    "method": "GET",
+                    "uri": "https://wd3-services1.myworkday.com/ccx/service/customreport2/solita/isu.operating.app/int000.operating.app.customers?format=json"
+                },
+                "runAfter": {
+                    "Array": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
                     }
                 },
-                "splitOn": "@triggerOutputs()?['body']"
+                "type": "Http"
+            },
+            "For_each": {
+                "actions": {
+                    "Modified_Response": {
+                        "inputs": {
+                            "name": "Array var",
+                            "value": "@outputs('Modifying_Response')"
+                        },
+                        "runAfter": {
+                            "Modifying_Response": [
+                                "SUCCEEDED"
+                            ]
+                        },
+                        "type": "AppendToArrayVariable"
+                    },
+                    "Modifying_Response": {
+                        "inputs": {
+                            "IndustryName": "@items('For_each')?['industry']",
+                            "name": "ABC",
+                            "shipToCountry": "@items('For_each')?['shipToCountry']"
+                        },
+                        "type": "Compose"
+                    }
+                },
+                "foreach": "@outputs('Parse_JSON')?['body']?['Report_Entry']",
+                "runAfter": {
+                    "Parse_JSON": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "foreach"
+            },
+            "Parse_JSON": {
+                "inputs": {
+                    "content": "@outputs('WD_API_Response')",
+                    "schema": {
+                        "properties": {
+                            "Report_Entry": {
+                                "items": {
+                                    "properties": {
+                                        "customer": {
+                                            "type": "string"
+                                        },
+                                        "customerCategory": {
+                                            "type": "string"
+                                        },
+                                        "customerChildren": {
+                                            "type": "string"
+                                        },
+                                        "customerLead": {
+                                            "type": "string"
+                                        },
+                                        "customerName": {
+                                            "type": "string"
+                                        },
+                                        "customerObject": {
+                                            "type": "string"
+                                        },
+                                        "industry": {
+                                            "type": "string"
+                                        },
+                                        "salesRegion": {
+                                            "type": "string"
+                                        },
+                                        "segment": {
+                                            "type": "string"
+                                        },
+                                        "shipToCountry": {
+                                            "type": "string"
+                                        },
+                                        "workdayID": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "customerChildren",
+                                        "shipToCountry",
+                                        "segment",
+                                        "workdayID",
+                                        "industry",
+                                        "customerCategory",
+                                        "customerLead",
+                                        "customerObject",
+                                        "customerName",
+                                        "customer",
+                                        "salesRegion"
+                                    ],
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "runAfter": {
+                    "WD_API_Response": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "ParseJson"
+            },
+            "Upserting_to_operating_API": {
+                "inputs": {
+                    "body": "@variables('Array var')[0]",
+                    "headers": {
+                        "Authorization": "Bearer NTBhMzY1MDctODVlNy00ODNmLWIyYjgtZTYzNTY1MWYwZjNh"
+                    },
+                    "method": "POST",
+                    "uri": "https://api.operating.app/v1/clients"
+                },
+                "runAfter": {
+                    "For_each": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "runtimeConfiguration": {
+                    "contentTransfer": {
+                        "transferMode": "Chunked"
+                    }
+                },
+                "type": "Http"
+            },
+            "WD_API_Response": {
+                "inputs": "@body('Calling_Workday_API')",
+                "runAfter": {
+                    "Calling_Workday_API": [
+                        "SUCCEEDED"
+                    ]
+                },
+                "type": "Compose"
             }
         },
         "contentVersion": "1.0.0.0",
-        "outputs": {}
+        "outputs": {},
+        "triggers": {
+            "Recurrence": {
+                "recurrence": {
+                    "frequency": "Day",
+                    "interval": 1,
+                    "timeZone": "FLE Standard Time"
+                },
+                "type": "Recurrence"
+            }
+        }
     },
     "kind": "Stateful"
 }
