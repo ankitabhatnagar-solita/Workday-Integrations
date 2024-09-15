@@ -17,9 +17,9 @@
             "Calling_Workday_API": {
                 "inputs": {
                     "authentication": {
-                        "password": "Ex1d0uryVinAnGH4lmc4s3QlSCM8#3.94e",
+                        "password": "{authentication.password}",
                         "type": "Basic",
-                        "username": "isu.operating.app"
+                        "username": "{authentication.username}"
                     },
                     "method": "GET",
                     "uri": "https://wd3-services1.myworkday.com/ccx/service/customreport2/solita/isu.operating.app/int000.operating.app.customers?format=json"
@@ -141,7 +141,7 @@
                 "inputs": {
                     "body": "@variables('Array var')[0]",
                     "headers": {
-                        "Authorization": "Bearer NTBhMzY1MDctODVlNy00ODNmLWIyYjgtZTYzNTY1MWYwZjNh"
+                        "Authorization": "Bearer {Authorization.header}}"
                     },
                     "method": "POST",
                     "uri": "https://api.operating.app/v1/clients"
