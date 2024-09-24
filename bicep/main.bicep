@@ -2,7 +2,7 @@ param appInsightsName string = 'SOP-integration1'
 
 @description('The name of the resource')
 
-param logicAppName string = 'Ankita-Workday-Integration'
+param logicAppName string = 'Workday-Integration'
 
 @description('The resource location')
 
