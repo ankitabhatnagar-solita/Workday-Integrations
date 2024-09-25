@@ -14,7 +14,6 @@ jobs:
         CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       with:
         creds: $CREDENTIALS
-      
       #uses: azure/login@v1
       #with:
           #client-id: ${{ secrets.AZURE_CLIENT_ID }}
