@@ -8,7 +8,7 @@ param logicAppName string = 'Workday-Integration'
 
 param location string = 'North Europe'
 
-param keyvaultName string
+param keyvaultName string = 'keyvault-secret-store'
 
 var logicAppDefinition = json(loadTextContent('../WorkdayLogicApp/workflow.json'))
 
