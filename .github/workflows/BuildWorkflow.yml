@@ -12,7 +12,7 @@ jobs:
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        auth-type: IDENTITY
+        auth-type: SERVICE_PRINCIPAL
       
       #uses: azure/login@v1
       #with:
