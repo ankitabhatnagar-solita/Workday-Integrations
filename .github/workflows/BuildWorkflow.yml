@@ -13,8 +13,16 @@ jobs:
       env:
         CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
       with:
-        creds: $CREDENTIALS
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
         auth-type: SERVICE_PRINCIPAL
+        enable-AzPSSession: true
+        
+    - name: Azure CLI script
+      uses: azure/cli@v2
+      with:
+        azcliversion: latest
+        inlineScript: |
+          az account show
       #uses: azure/login@v1
       #with:
           #client-id: ${{ secrets.AZURE_CLIENT_ID }}
