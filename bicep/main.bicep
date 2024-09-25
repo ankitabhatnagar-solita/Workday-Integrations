@@ -12,7 +12,6 @@ param keyvaultName string = 'keyvault-secret-store'
 
 var logicAppDefinition = json(loadTextContent('../WorkdayLogicApp/workflow.json'))
 
-
 resource logicApp 'Microsoft.Logic/workflows@2019-05-01' = {
 
   name: logicAppName
